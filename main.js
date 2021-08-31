@@ -1,8 +1,14 @@
+/*
+ * 모듈 가져오기
+ */
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 
+/*
+ * 공통 템플릿 HTML
+ */
 function templateHTML(title, list, body, control) {
   return `
   <!doctype html>
@@ -21,6 +27,9 @@ function templateHTML(title, list, body, control) {
   `;
 }
 
+/*
+ * 템플릿 리스트 
+ */
 function templateList(filelist) {
   var list = '<ul>';
   var i = 0;
@@ -32,7 +41,6 @@ function templateList(filelist) {
   return list;
 }
 
-
 var app = http.createServer(function (request, response) {
   var _url = request.url;
   var queryData = url.parse(_url, true).query;
@@ -40,7 +48,9 @@ var app = http.createServer(function (request, response) {
 
   if (pathname === '/') {
     if (queryData.id === undefined) {
-      //파일 목록을 가져온다.
+     /*
+      * 파일 목록 가져오기
+      */
       fs.readdir('./data', function (error, filelist) {
         var title = "반가워요!!";
         var description = "헬로우 노드js";
@@ -52,7 +62,7 @@ var app = http.createServer(function (request, response) {
         response.writeHead(200);
         response.end(template);
       });
-    } else {
+    } else { 
       fs.readdir('./data', function (error, filelist) {
         fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
           var list = templateList(filelist);
@@ -72,6 +82,9 @@ var app = http.createServer(function (request, response) {
         });
       });
     }
+  /*
+   * 생성하기 
+   */
   } else if (pathname === '/create') {
     fs.readdir('./data', function (error, filelist) {
       var title = "web - create";
@@ -105,7 +118,9 @@ var app = http.createServer(function (request, response) {
       })
     })
 
-
+  /*
+   * 수정하기
+   */  
   } else if(pathname === '/update'){
     fs.readdir('./data', function (error, filelist) {
       fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
@@ -130,7 +145,7 @@ var app = http.createServer(function (request, response) {
         response.end(template);
       });
     });
-
+  
   } else if(pathname === '/update_process') {
     var body = '';
     request.on('data', function (data) {
@@ -149,7 +164,9 @@ var app = http.createServer(function (request, response) {
       })
     })
   });
-
+ /*
+  * 삭제하기 
+  */
   } else if(pathname === '/delete_process') {
     var body = '';
     request.on('data', function (data) {
@@ -165,7 +182,9 @@ var app = http.createServer(function (request, response) {
         
       })
   });
-
+ /*
+  * 에러 페이지  
+  */
   }else {
     response.writeHead(404);
     response.end('not founddd');
